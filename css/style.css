@@ -79,20 +79,14 @@ button {
     font-size: 20px;
 } 
 
-/* .board-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: auto;
-} */
+
 
 
 .board-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 70vh;
+    height: 67vh;
     margin: auto;
     max-width: 100%;
 }

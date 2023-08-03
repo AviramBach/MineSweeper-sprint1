@@ -6,24 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Mine Sweeper</title>
+    <title>Mines Sweeper</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body onload="onInit()" >
-    <h1>Mine Sweeper</h1>
-    <!-- <h2>Score: <span class="score">0</span></h2> -->
+<body onload="onInit()">
+    <h1>Mines Sweeper</h1>
+    <h3>🚩 Left: <span class="flag">2</span></h3>
+    <h3>💖 Left: <span class="live">2</span></h3>
 
     <table class="board-container">
         <tbody class="board"></tbody>
     </table>
 
-    <!-- <button onclick="playAgain()">Restart</button> -->
+    <button class = "restart" onclick="playAgain()">😃</button>
 
-    <!-- <div class="modal hide">
+    <div class="modal hide">
         <button class ="btn" onclick="playAgain()">Play again</button>
         <h2 class="title"></h2>
-    </div> -->
+    </div>
+
+    <footer>
+        <p>Aviram Bach</p>
+        
+    </footer>
 
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>

@@ -48,8 +48,6 @@ function onInit() {
 
     addRandMines()
     setMinesNegsCount(gBoard)
-
-
     rendNormalFace()
     rendLeftLives()
     rendLeftFlags()
@@ -127,7 +125,7 @@ function replaceMineLocation(cell, currRowIdx, currColIdx) { // if the first cli
     var designatedCell = gBoard[randRowIdx][randColIdx]
     if (randRowIdx === currRowIdx && randColIdx === currColIdx) {
         replaceMineLocation(cell, currRowIdx, currColIdx)
-    }else{
+    } else {
         designatedCell = cell
         cell.isMine = false
     }
@@ -137,6 +135,10 @@ function onCellClicked(elCell, i, j) {
 
     if (gGame.isOn === true) {
         const cell = gBoard[i][j]
+
+        if (gClicks === 0) {
+            startTimer()
+        }
 
         if (gClicks === 0 && cell.isMine === true) { // this condition is for checking if the first click is a mine
             replaceMineLocation(cell, i, j)
@@ -311,6 +313,7 @@ function checkGameOver() {
         gameOver('YOU LOST! \n Be Careful next time')
 
     }
+    
 }
 
 function rendNormalFace() {
@@ -328,7 +331,7 @@ function gameOver(txt) {
     elModal.classList.remove('hide')
 
     console.log('Game Over')
-
+    clearInterval(gTimerInterval)
 
 }
 
@@ -336,6 +339,11 @@ function playAgain() {
 
     const elModal = document.querySelector('.modal')
     elModal.classList.add('hide')
+
+    const elTimer = document.querySelector('.timer')
+    clearInterval(gTimerInterval);
+    elTimer.textContent = 'Time Elapsed: 0.000'
+
 
     if (gLevel.SIZE === 4) {
         gCountLives = gLevel.LIVES.EASY
@@ -374,6 +382,28 @@ function getClassName(location) {
     const cellClass = 'cell-' + location.i + '-' + location.j
     return cellClass
 }
+
+
+var gStartTime
+var gTimerInterval
+
+function updateTimer() {
+    var currentTime = Date.now();
+    var elapsedTime = currentTime - gStartTime;
+
+    var seconds = ((elapsedTime % 60000) / 1000).toFixed(3);
+
+    document.querySelector('.timer').textContent = `Time Elapsed: ${seconds}`;
+}
+
+function startTimer() {
+
+    gStartTime = Date.now()
+    updateTimer()
+    gTimerInterval = setInterval(updateTimer, 1)
+}
+
+
 
 
 ////////////////////////////////////////

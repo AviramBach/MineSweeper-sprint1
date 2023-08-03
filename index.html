@@ -12,23 +12,31 @@
 
 <body onload="onInit()">
     <h1>Mines Sweeper</h1>
-    <h3>🚩 Left: <span class="flag">2</span></h3>
-    <h3>💖 Left: <span class="live">2</span></h3>
+    <h3>🚩 Left: <span class="flag"></span></h3>
+    <h3>💖 Left: <span class="live"></span></h3>
+
+    <div class="btn-level">
+        <button class="easy" onclick="setLevel(4)">Easy(16)</button>
+        <button class="medium" onclick="setLevel(8)">Medium(25)</button>
+        <button class="hard" onclick="setLevel(12)"> Hard(36)</button>
+    </div>
+    <button class="restart" onclick="playAgain()">😃</button>
+    
+    <div class="message hide" id="message"></div>
 
     <table class="board-container">
         <tbody class="board"></tbody>
     </table>
 
-    <button class = "restart" onclick="playAgain()">😃</button>
 
     <div class="modal hide">
-        <button class ="btn" onclick="playAgain()">Play again</button>
+        <!-- <button class ="btn" onclick="playAgain()">Play again</button> -->
         <h2 class="title"></h2>
     </div>
 
     <footer>
         <p>Aviram Bach</p>
-        
+
     </footer>
 
     <script src="js/utils.js"></script>

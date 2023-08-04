@@ -79,14 +79,11 @@ button {
     font-size: 20px;
 } 
 
-
-
-
 .board-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 67vh;
+    height: 70vh;
     margin: auto;
     max-width: 100%;
 }

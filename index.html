@@ -11,21 +11,26 @@
 </head>
 
 <body onload="onInit()">
-    <h1>Mines Sweeper</h1>
+    <img src="img/background.png" alt="hilltop with flag" class="background-image">
+    <h1>Minesweeper</h1>
     <h3>🚩 Left: <span class="flag"></span></h3>
     <h3>💖 Left: <span class="live"></span></h3>
     <div class="timer">Time Elapsed: 0.000</div>
-    
     <div class="btn-level">
         <button class="easy" onclick="setLevel(4)">Easy</button>
-        <button class="medium" onclick="setLevel(8)">Medium</button>
+        <button class="moderate" onclick="setLevel(8)">Moderate</button>
         <button class="hard" onclick="setLevel(12)"> Hard</button>
     </div>
-    <button class="restart" onclick="playAgain()">😃</button>
+    <div>
+        <button class="restart" onclick="playAgain()">😃</button>
+    </div>
+
+    <div >
+        <button class="safe-click-btn" onclick="onSafeClick()">Safe Click</button>
+        <h6 class= "safe">3 clicks available</h6>
+    </div>
     
-
     <div class="message hide" id="message"></div>
-
     <table class="board-container">
         <tbody class="board"></tbody>
     </table>
@@ -38,7 +43,6 @@
 
     <footer>
         <p>Aviram Bach</p>
-
     </footer>
 
     <script src="js/utils.js"></script>

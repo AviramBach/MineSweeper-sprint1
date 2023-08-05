@@ -15,7 +15,7 @@ const gLevel = {
     MINES: 2,
     LIVES: {
         EASY: 1,
-        MEDIUM: 3,
+        MODERATE: 3,
         HARD: 3
     }
 }
@@ -24,7 +24,8 @@ const gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    secsPassed: 0,
+    safeClicks: 3
 }
 
 
@@ -39,18 +40,15 @@ function onInit() {
     gGame.shownCount = 0
     gGame.markedCount = gLevel.MINES
     gGame.isOn = true
-
+    gGame.safeClicks = 3
     gBoard = buildBoard()
-    // if (gClicks === 0) {
-    //     addRandMines()
-    //     setMinesNegsCount(gBoard)
-    // }
 
     addRandMines()
     setMinesNegsCount(gBoard)
     rendNormalFace()
     rendLeftLives()
     rendLeftFlags()
+    rendSafeClicks()
     renderBoard(gBoard)
 }
 
@@ -118,16 +116,17 @@ function checkNeighbors(board, rowIdx, colIdx) {
     return count
 }
 
-function replaceMineLocation(cell, currRowIdx, currColIdx) { // if the first click is a mine, the function change its location 
+function replaceMineLocation(currRowIdx, currColIdx) { // if the first click is a mine, the function change its location 
 
     const randRowIdx = getRandomInt(0, gLevel.SIZE)
     const randColIdx = getRandomInt(0, gLevel.SIZE)
     var designatedCell = gBoard[randRowIdx][randColIdx]
-    if (randRowIdx === currRowIdx && randColIdx === currColIdx) {
-        replaceMineLocation(cell, currRowIdx, currColIdx)
+
+    if ((randRowIdx === currRowIdx && randColIdx === currColIdx) || designatedCell.isMine === true) {
+        replaceMineLocation(currRowIdx, currColIdx)
     } else {
-        designatedCell = cell
-        cell.isMine = false
+        gBoard[currRowIdx][currColIdx].isMine = false;
+        designatedCell.isMine = true;
     }
 }
 
@@ -140,10 +139,12 @@ function onCellClicked(elCell, i, j) {
             startTimer()
         }
 
-        if (gClicks === 0 && cell.isMine === true) { // this condition is for checking if the first click is a mine
-            replaceMineLocation(cell, i, j)
+        if (gClicks === 0) {
+            if (cell.isMine === true) { // this condition is for checking if the first click is a mine
+                replaceMineLocation(i, j)
+            }
+            gClicks++
         }
-
         if (cell.isMine === true && cell.isShown === false) {
 
             gCountLives--
@@ -157,7 +158,7 @@ function onCellClicked(elCell, i, j) {
             showMessage("You have been mined")
             setTimeout(hideMessage, 1000)
         }
-        if (cell.isMine === false && cell.isMarked === false) {
+        if (cell.isMine === false && cell.isMarked === false & cell.isShown === false) {
             cell.isShown = true
             elCell.classList.add('clicked')
             gGame.shownCount++
@@ -233,18 +234,16 @@ function displayMines() {
 
 function addRandMines() {
 
-    var numOfMines = gLevel.MINES
-    for (var i = 0; i < numOfMines; i++) {
+    var placedMines = 0
+
+    while (placedMines < gLevel.MINES) {
         const randRowIdx = getRandomInt(0, gLevel.SIZE)
         const randColIdx = getRandomInt(0, gLevel.SIZE)
         var designatedCell = gBoard[randRowIdx][randColIdx]
 
-        if (designatedCell.isMine === true) {
-            numOfMines++
-            continue
-        }
-        else {
+        if (designatedCell.isMine === false) {
             designatedCell.isMine = true
+            placedMines++
         }
     }
 }
@@ -313,7 +312,7 @@ function checkGameOver() {
         gameOver('YOU LOST! \n Be Careful next time')
 
     }
-    
+
 }
 
 function rendNormalFace() {
@@ -348,7 +347,7 @@ function playAgain() {
     if (gLevel.SIZE === 4) {
         gCountLives = gLevel.LIVES.EASY
     } else if (gLevel.SIZE === 8) {
-        gCountLives = gLevel.LIVES.MEDIUM
+        gCountLives = gLevel.LIVES.MODERATE
     } else if (gLevel.SIZE === 12) {
         gCountLives = gLevel.LIVES.HARD
     }
@@ -367,14 +366,18 @@ function setLevel(num) {
     if (num === 8) {
         gLevel.SIZE = 8
         gLevel.MINES = 14
-        gCountLives = gLevel.LIVES.MEDIUM
+        gCountLives = gLevel.LIVES.MODERATE
     }
     if (num === 12) {
         gLevel.SIZE = 12
         gLevel.MINES = 32
         gCountLives = gLevel.LIVES.HARD
     }
-    onInit()
+
+    clearInterval(gTimerInterval)
+    const elTimer = document.querySelector('.timer')
+    elTimer.textContent = 'Time Elapsed: 0.000'
+    playAgain()
 }
 
 function getClassName(location) {
@@ -387,15 +390,6 @@ function getClassName(location) {
 var gStartTime
 var gTimerInterval
 
-function updateTimer() {
-    var currentTime = Date.now();
-    var elapsedTime = currentTime - gStartTime;
-
-    var seconds = ((elapsedTime % 60000) / 1000).toFixed(3);
-
-    document.querySelector('.timer').textContent = `Time Elapsed: ${seconds}`;
-}
-
 function startTimer() {
 
     gStartTime = Date.now()
@@ -403,6 +397,13 @@ function startTimer() {
     gTimerInterval = setInterval(updateTimer, 1)
 }
 
+function updateTimer() {
+    var currentTime = Date.now()
+    var elapsedTime = currentTime - gStartTime
+    var seconds = ((elapsedTime % 60000) / 1000).toFixed(3)
+
+    document.querySelector('.timer').textContent = `Time Elapsed: ${seconds}`
+}
 
 
 
@@ -410,5 +411,46 @@ function startTimer() {
 //Bonus Tasks//
 
 
+function onSafeClick() {
+
+    console.log('Safe click button was clicked.')
+    
+    if (gGame.safeClicks > 0 && gGame.isOn === true ){
+    const safeCellLocation = getRandomSafeCell()
+
+    const safeCellSelector = '.' + getClassName({ i: safeCellLocation.row, j: safeCellLocation.col })
+    const elSafeCell = document.querySelector(safeCellSelector)
+
+    elSafeCell.classList.add('highlighted')
+
+    setTimeout(() => {
+        elSafeCell.classList.remove('highlighted');
+    }, 700)
+
+    gGame.safeClicks--
 
 
+    rendSafeClicks()
+    }
+}
+
+function getRandomSafeCell() {
+    var randRowIdx = getRandomInt(0, gLevel.SIZE);
+    var randColIdx = getRandomInt(0, gLevel.SIZE);
+    var safeCell = gBoard[randRowIdx][randColIdx];
+
+    while (safeCell.isMine === true || safeCell.isShown === true) {
+        randRowIdx = getRandomInt(0, gLevel.SIZE);
+        randColIdx = getRandomInt(0, gLevel.SIZE);
+        safeCell = gBoard[randRowIdx][randColIdx];
+    }
+
+    return { row: randRowIdx, col: randColIdx };
+}
+
+function rendSafeClicks(){
+
+    const elSafeCounter = document.querySelector(".safe")
+    elSafeCounter.innerText =`${gGame.safeClicks} clicks available`
+    
+}
